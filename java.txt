@@ -1,4 +1,600 @@
+1)package paritycheck;
+
+import java.util.Scanner;
+
+public class ParityCheck {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the String");
+        String data = sc.nextLine();
+        int count = 0;
+        for (int i = 0; i < data.length(); i++) {
+            if (data.charAt(i) == '1') {
+                count++;
+            }
+        }
+
+        System.out.println("Enter the choice");
+        System.out.println("1.Even Parity");
+        System.out.println("2. Odd Parity");
+
+        int choice = sc.nextInt();
+
+        if (choice == 1) {
+            if (count % 2 == 0) {
+                data = data + "0";
+            } else {
+                data = data + "1";
+            }
+        } else if (choice == 2) {
+            if (count % 2 == 0) {
+                data = data + "1";
+            } else {
+                data = data + "0";
+            }
+        }
+
+        System.out.println("The String is");
+        System.out.println(data);
+    }
+
+}
+
+2)package CharacterCountFraming;
+
+import java.util.Scanner;
+
+public class CharacterCountFraming {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the number of frames you want to send");
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        String[] frames = new String[n];
+        int[] length = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            System.out.print("Enter the frame:");
+            frames[i] = sc.nextLine();
+            length[i] = frames[i].length() + 1;
+        }
+        String transmitted = "";
+        for (int i = 0; i < n; i++) {
+            transmitted = transmitted + length[i] + frames[i];
+        }
+        System.out.println("\nThe transmitted frame is: " + transmitted);
+
+        // -------- Receiver Side --------
+        System.out.println("\nAt Receiver:");
+        System.out.print("Enter data: ");
+        String received = transmitted;
+
+        int index = 0;
+        int frameNo = 1;
+
+        System.out.print("Frame Sizes are");
+        for (int i = 0; i < n; i++) {
+            int size = Character.getNumericValue(received.charAt(index));
+            System.out.print(size + " ");
+            index = index + size;
+        }
+        System.out.println("\nframes are:");
+
+        index = 0;
+        for (int i = 0; i < n; i++) {
+            int size = Character.getNumericValue(received.charAt(index));
+            String frame = received.substring(index + 1, index + size);
+            System.out.println("frame " + frameNo + ": " + frame);
+            index = index + size;
+            frameNo++;
+        }
+    }
+}
+
+3)package Echo;
 import java.io.*;
+import java.net.*;
+public class EchoServer {
+
+    public static void main(String argv[]) throws Exception {
+        String clientSentence;
+        String capitalizedSentence;
+        ServerSocket welcomeSocket = new ServerSocket(6789);
+        System.out.println("EchoServer loading....");
+        while (true) {
+            Socket connectionSocket= welcomeSocket.accept();
+            BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+            DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
+            clientSentence = inFromClient.readLine();
+            capitalizedSentence= clientSentence.toUpperCase() + '\n';
+            outToClient.writeBytes(capitalizedSentence);
+            System.out.println("FROM Client:"+capitalizedSentence);
+
+        }
+
+    }
+
+}
+/*
+
+package Echo;
+
+import java.io.*;
+import java.net.*;
+public class EchoClient {
+     public static void main(String argv[]) throws Exception {
+        String sentence;
+        String modifiedSentence;
+        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+        Socket clientSocket = new Socket("localhost", 6789);
+        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        sentence = inFromUser.readLine();
+        outToServer.writeBytes(sentence + '\n');
+        modifiedSentence = inFromServer.readLine();
+        System.out.println("FROM SERVER: "  + modifiedSentence);
+        clientSocket.close();
+    }
+
+}
+4)
+package Calculator;
+
+import java.io.*;
+import java.net.*;
+
+
+public class MathServer {
+
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(6789);
+        System.out.println("MathServer loading....");
+        Socket socket = serverSocket.accept();
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+        String input = in.readLine(); // উদাহরণ: "12+5"
+        String[] parts = input.split("(?=[+-/*])|(?<=[+-/*])");
+
+        double num1 = Double.parseDouble(parts[0]);
+        String op = parts[1];
+        double num2 = Double.parseDouble(parts[2]);
+        double result = 0;
+        switch (op) {
+            case "+":
+                result = num1 + num2;
+                break;
+            case "-":
+                result = num1 - num2;
+                break;
+            case "*":
+                result = num1 * num2;
+                break;
+            case "/":
+                result = num1 / num2;
+                break;
+            default:
+                break;
+        }
+
+        out.write("Result = " + result);
+        out.newLine();
+        out.flush();
+
+        System.out.println("From Client: " + input + " = " + result);
+
+        socket.close();
+        serverSocket.close();
+    }
+}
+
+
+package Calculator;
+
+import java.io.*;
+import java.net.*;
+
+/**
+ *
+ * @author Hp
+ */
+public class MathClient {
+    public static void main(String[] args) throws Exception {
+        Socket socket = new Socket("localhost", 6789);
+        BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        String line = console.readLine();
+        out.println(line);
+        System.out.println(in.readLine());
+        socket.close();
+    }
+}
+
+5) package Loan;
+import java.io.*;
+import java.net.*;
+/**
+ *
+ * @author Hp
+ */
+public class LoanServer {
+      public static void main(String[] args) throws Exception {
+        ServerSocket serverSocket = new ServerSocket(6789);
+        System.out.println("LoanServer loading....");
+        Socket socket = serverSocket.accept();
+        DataInputStream in = new DataInputStream(socket.getInputStream());
+        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+        double AIR = in.readDouble();
+        int years = in.readInt();
+        double loanAmount = in.readDouble();
+        double MIR = AIR/ 1200;
+        double monthlyPayment = loanAmount * MIR /(1 - 1 / Math.pow(1 + MIR, years * 12));
+        double totalPayment = monthlyPayment * years * 12;
+        out.writeDouble(monthlyPayment);
+        out.writeDouble(totalPayment);
+        System.out.println("Annual rate :" + AIR );
+        System.out.println("Number of year: " +years);
+        System.out.println("Loan Amount:" +loanAmount);
+        System.out.println("Monthly Payment :"+monthlyPayment);
+        System.out.println("Total Payment:"+totalPayment);
+        socket.close();
+        serverSocket.close();
+    }
+}
+
+package Loan;
+
+import java.io.*;
+import java.net.*;
+
+/**
+ *
+ * @author Hp
+ */
+public class LoanClient {
+
+    public static void main(String[] args) throws IOException {
+        Socket socket = new Socket("localhost", 6789);
+        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+        DataInputStream in = new DataInputStream(socket.getInputStream());
+        BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Enter the number of Annual Rate:");
+        double rate = Double.parseDouble(console.readLine());
+        System.out.println("Enter the number of Year");
+        int years = Integer.parseInt(console.readLine());
+        System.out.println("Enter the number of Loan Amount");
+        double loanAmount = Double.parseDouble(console.readLine());
+        out.writeDouble(rate);
+        out.writeInt(years);
+        out.writeDouble(loanAmount);
+        double monthlyPayment = in.readDouble();
+        double totalPayment = in.readDouble();
+        System.out.printf("Monthly Payment: %.6f\n", monthlyPayment);
+        System.out.printf("Total Payment: %.6f\n", totalPayment);
+        socket.close();
+    }
+}
+
+6)
+package UDP;
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+
+public class UDPEchoServer {
+
+    public static void main(String[] args) {
+        try {
+            DatagramSocket serverSocket = new DatagramSocket(9876);
+            byte[] receiveData = new byte[1024];
+            byte[] sendData;
+
+            System.out.println("UDP Echo Server is running...");
+
+            while (true) {
+                // Receive packet from client
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                serverSocket.receive(receivePacket);
+
+                String clientMessage = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                System.out.println("Received from client: " + clientMessage);
+
+                // Echo back to client
+                sendData = clientMessage.getBytes();
+                DatagramPacket sendPacket = new DatagramPacket(
+                        sendData, sendData.length,
+                        receivePacket.getAddress(), receivePacket.getPort()
+                );
+                serverSocket.send(sendPacket);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+package UDP;
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.Scanner;
+
+public class UDPEchoClient {
+    public static void main(String[] args) {
+        try {
+            DatagramSocket clientSocket = new DatagramSocket();
+            InetAddress IPAddress = InetAddress.getByName("localhost");
+            byte[] sendData;
+            byte[] receiveData = new byte[1024];
+            Scanner sc = new Scanner(System.in);
+
+            System.out.println("Enter message to send to server: ");
+            String message = sc.nextLine();
+            sendData = message.getBytes();
+
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
+            clientSocket.send(sendPacket);
+
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            clientSocket.receive(receivePacket);
+
+            String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
+            System.out.println("Server echoed: " + response);
+
+            clientSocket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+7)package Search;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.util.StringTokenizer;
+
+public class SearchingServer {
+    public static void main(String[] args) {
+        try {
+            DatagramSocket serverSocket = new DatagramSocket(9877);
+            byte[] receiveData = new byte[1024];
+            byte[] sendData;
+
+            System.out.println("Searching Server running...");
+
+            while (true) {
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                serverSocket.receive(receivePacket);
+
+                String clientMessage = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                StringTokenizer st = new StringTokenizer(clientMessage, ";");
+                String numbersStr = st.nextToken();
+                int searchNumber = Integer.parseInt(st.nextToken());
+
+                StringTokenizer numTokens = new StringTokenizer(numbersStr, ",");
+                boolean found = false;
+
+                while (numTokens.hasMoreTokens()) {
+                    int num = Integer.parseInt(numTokens.nextToken());
+                    if (num == searchNumber) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                String result = found ? "Number found!" : "Number not found!";
+                sendData = result.getBytes();
+
+                DatagramPacket sendPacket = new DatagramPacket(
+                        sendData, sendData.length, 
+                        receivePacket.getAddress(), receivePacket.getPort()
+                );
+                serverSocket.send(sendPacket);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+package Search;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.Scanner;
+
+public class SearchingClient {
+    public static void main(String[] args) {
+        try {
+            DatagramSocket clientSocket = new DatagramSocket();
+            InetAddress IPAddress = InetAddress.getByName("localhost");
+            byte[] sendData;
+            byte[] receiveData = new byte[1024];
+            Scanner sc = new Scanner(System.in);
+
+            System.out.println("Enter numbers separated by commas (e.g., 10,20,30): ");
+            String numbers = sc.nextLine();
+
+            System.out.println("Enter number to search: ");
+            String searchNumber = sc.nextLine();
+
+            String message = numbers + ";" + searchNumber;
+            sendData = message.getBytes();
+
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9877);
+            clientSocket.send(sendPacket);
+
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            clientSocket.receive(receivePacket);
+
+            String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
+            System.out.println("Server response: " + response);
+
+            clientSocket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+8)
+package Salary;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.util.StringTokenizer;
+
+public class SalaryServer {
+    public static void main(String[] args) {
+        try {
+            DatagramSocket serverSocket = new DatagramSocket(9878);
+            byte[] receiveData = new byte[1024];
+            byte[] sendData;
+
+            System.out.println("Salary Server running...");
+
+            while (true) {
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                serverSocket.receive(receivePacket);
+
+                String clientMessage = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                StringTokenizer st = new StringTokenizer(clientMessage, ",");
+
+                double base = Double.parseDouble(st.nextToken());
+                double houseRent = Double.parseDouble(st.nextToken());
+                double incentivePercent = Double.parseDouble(st.nextToken());
+
+                double totalSalary = base + houseRent + (base * incentivePercent / 100);
+                String result = "Total Salary: " + totalSalary;
+
+                sendData = result.getBytes();
+                DatagramPacket sendPacket = new DatagramPacket(
+                        sendData, sendData.length, 
+                        receivePacket.getAddress(), receivePacket.getPort()
+                );
+                serverSocket.send(sendPacket);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+package Salary;
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.Scanner;
+
+public class SalaryClient {
+    public static void main(String[] args) {
+        try {
+            DatagramSocket clientSocket = new DatagramSocket();
+            InetAddress IPAddress = InetAddress.getByName("localhost");
+            byte[] sendData;
+            byte[] receiveData = new byte[1024];
+            Scanner sc = new Scanner(System.in);
+
+            System.out.print("Enter Base Salary: ");
+            String base = sc.nextLine();
+            System.out.print("Enter House Rent: ");
+            String houseRent = sc.nextLine();
+            System.out.print("Enter Incentive Percentage: ");
+            String incentive = sc.nextLine();
+
+            String message = base + "," + houseRent + "," + incentive;
+            sendData = message.getBytes();
+
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9878);
+            clientSocket.send(sendPacket);
+
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            clientSocket.receive(receivePacket);
+
+            String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
+            System.out.println("Server response: " + response);
+
+            clientSocket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+9)import java.net.InetAddress;
+
+public class IPAddressBinary {
+    public static void main(String[] args) {
+        try {
+            // Local host এর InetAddress object নিন
+            InetAddress localHost = InetAddress.getLocalHost();
+            String ipAddress = localHost.getHostAddress();
+            System.out.println("Local IP Address: " + ipAddress);
+
+            // IP address কে octets এ ভাগ করা
+            String[] octets = ipAddress.split("\\.");
+            StringBuilder binaryIP = new StringBuilder();
+
+            for (int i = 0; i < octets.length; i++) {
+                int octet = Integer.parseInt(octets[i]);
+                String binaryOctet = String.format("%8s", Integer.toBinaryString(octet)).replace(' ', '0');
+                binaryIP.append(binaryOctet);
+                if (i < octets.length - 1) binaryIP.append(".");
+            }
+
+            System.out.println("Binary Notation: " + binaryIP.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+10)import java.net.InetAddress;
+
+public class IPClassDetector {
+    public static void main(String[] args) {
+        try {
+            InetAddress localHost = InetAddress.getLocalHost();
+            String ipAddress = localHost.getHostAddress();
+            System.out.println("Local IP Address: " + ipAddress);
+
+            // প্রথম octet বের করা
+            String firstOctetStr = ipAddress.split("\\.")[0];
+            int firstOctet = Integer.parseInt(firstOctetStr);
+
+            // IP Class নির্ধারণ
+            String ipClass;
+            if (firstOctet >= 1 && firstOctet <= 126) {
+                ipClass = "A";
+            } else if (firstOctet >= 128 && firstOctet <= 191) {
+                ipClass = "B";
+            } else if (firstOctet >= 192 && firstOctet <= 223) {
+                ipClass = "C";
+            } else if (firstOctet >= 224 && firstOctet <= 239) {
+                ipClass = "D (Multicast)";
+            } else if (firstOctet >= 240 && firstOctet <= 254) {
+                ipClass = "E (Experimental)";
+            } else {
+                ipClass = "Unknown";
+            }
+
+            System.out.println("IP Class: " + ipClass);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+11)import java.io.*;
 import java.net.*;
 import java.util.StringTokenizer;
 
